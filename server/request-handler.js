@@ -33,22 +33,21 @@ exports.handler = function(request, response) {
         body += data;
       });
       request.on('end', function () {
-        // var storage = fs.readFileSync('./storage.txt');
-        // storage = JSON.parse(storage);
-        // var newMessage = JSON.parse(body);
-        // newMessage.createdAt = new Date().toISOString();
-        // storage.results.unshift(newMessage);
-        // fs.writeFileSync('./storage.txt', JSON.stringify(storage));
-
-        // Use parse to get an object.
         var newMessage = JSON.parse(body);
         newMessage.createdAt = new Date().toISOString();
-        // Write to db.
         console.log('Body: ',body);
-        var userQuery = "INSERT INTO Users (name) VALUES (\'" + newMessage.username + "\')";
-        var roomQuery = "INSERT INTO Rooms (name) VALUES (" + newMessage.roomname + ")";
-        var msgQuery = "insert into messages (u_id, r_id, message) values (1, 1, " + newMessage.text + ")";
+        var userQuery = "INSERT IGNORE INTO Users (name) VALUES (\'" + newMessage.username + "\')";
+        var roomQuery = "INSERT IGNORE INTO Rooms (name) VALUES (\'" + newMessage.roomname + "\')";
+        var msgQuery = "insert into messages (u_id, r_id, message) values (1, 1, \'" + newMessage.text + "\')";
         db.query(userQuery, function(err, results) {
+          console.log('Error: ',err);
+          console.log('Results: ',results);
+        });
+        db.query(roomQuery, function(err, results) {
+          console.log('Error: ',err);
+          console.log('Results: ',results);
+        });
+        db.query(msgQuery, function(err, results) {
           console.log('Error: ',err);
           console.log('Results: ',results);
         });

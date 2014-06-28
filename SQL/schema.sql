@@ -5,13 +5,13 @@ USE chat;
 /* Create other tables and define schemas for them here! */
 CREATE TABLE Users (
   u_id int(11) NOT NULL auto_increment,
-  name varchar(30),
+  name varchar(30) unique,
   primary key (u_id)
 );
 
 CREATE TABLE Rooms (
   r_id int(11) NOT NULL auto_increment,
-  name varchar(30),
+  name varchar(30) unique,
   primary key (r_id)
 );
 
