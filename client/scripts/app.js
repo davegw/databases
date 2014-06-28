@@ -2,11 +2,11 @@ var app = {
 
   init: function () {
     app.displayUserName();
-    // app.fetch();
+    app.fetch();
     app.initEventHandlers();
-    // setInterval(function() {
-    //   app.fetch();
-    // }, 2000);
+    setInterval(function() {
+      app.fetch();
+    }, 2000);
   },
 
   _activeChatRoom: false,
@@ -94,6 +94,7 @@ var app = {
     app.clearMessages();
     if (!app._activeChatRoom) {
       for (var i = 0 ; i < count ; i++ ) {
+        console.log(messagesData[i]);
         $('#chats').append(app.renderMessage(messagesData[i]));
       }
     } else {

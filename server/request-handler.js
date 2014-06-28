@@ -34,11 +34,10 @@ exports.handler = function(request, response) {
       });
       request.on('end', function () {
         var newMessage = JSON.parse(body);
-        newMessage.createdAt = new Date().toISOString();
         console.log('Body: ',body);
         var userQuery = "INSERT IGNORE INTO Users (name) VALUES (\'" + newMessage.username + "\')";
         var roomQuery = "INSERT IGNORE INTO Rooms (name) VALUES (\'" + newMessage.roomname + "\')";
-        var msgQuery = "insert into messages (u_id, r_id, message) values (1, 1, \'" + newMessage.text + "\')";
+        var msgQuery = "INSERT INTO Messages (u_id, r_id, message) values (1, 1, \'" + newMessage.text + "\')";
         db.query(userQuery, function(err, results) {
           console.log('Error: ',err);
           console.log('Results: ',results);
@@ -55,8 +54,14 @@ exports.handler = function(request, response) {
       });
     }
     else if (request.method === 'GET') {
-      responseBody = fs.readFileSync('../server/storage.txt');
-      completeResponse(200, response, responseBody);
+      // responseBody = fs.readFileSync('../server/storage.txt');
+      var getMsg = "Select users.name as username, messages.message as text, rooms.name as roomname, messages.created_at as createdAt from messages inner join users on users.u_id = messages.u_id inner join rooms on rooms.r_id=messages.r_id;";
+      db.query(getMsg, function(err, results) {
+        console.log('Error: ', err);
+        console.log('Results: ',results);
+        var obj = { results: results };
+        completeResponse(200, response, JSON.stringify(obj));
+      });
     }
   }
   else {
