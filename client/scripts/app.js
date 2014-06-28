@@ -2,11 +2,11 @@ var app = {
 
   init: function () {
     app.displayUserName();
-    app.fetch();
+    // app.fetch();
     app.initEventHandlers();
-    setInterval(function() {
-      app.fetch();
-    }, 2000);
+    // setInterval(function() {
+    //   app.fetch();
+    // }, 2000);
   },
 
   _activeChatRoom: false,
@@ -128,7 +128,7 @@ var app = {
       dataType: 'json',
       success: function() {
         $('#send #message').val('');
-        app.fetch();
+        // app.fetch();
       },
       error: function() {
         throw 'Could not send message';

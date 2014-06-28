@@ -6,8 +6,7 @@
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 var fs = require('fs');
 var path = require('path');
-// var storage = {results: []};
-// var qs = require('querystring');
+var db = require('../SQL/db.js').dbConnection;
 
 
 exports.handler = function(request, response) {
@@ -34,17 +33,30 @@ exports.handler = function(request, response) {
         body += data;
       });
       request.on('end', function () {
-        var storage = fs.readFileSync('./storage.txt');
-        storage = JSON.parse(storage);
+        // var storage = fs.readFileSync('./storage.txt');
+        // storage = JSON.parse(storage);
+        // var newMessage = JSON.parse(body);
+        // newMessage.createdAt = new Date().toISOString();
+        // storage.results.unshift(newMessage);
+        // fs.writeFileSync('./storage.txt', JSON.stringify(storage));
+
+        // Use parse to get an object.
         var newMessage = JSON.parse(body);
         newMessage.createdAt = new Date().toISOString();
-        storage.results.unshift(newMessage);
-        fs.writeFileSync('./storage.txt', JSON.stringify(storage));
+        // Write to db.
+        console.log('Body: ',body);
+        var userQuery = "INSERT INTO Users (name) VALUES (\'" + newMessage.username + "\')";
+        var roomQuery = "INSERT INTO Rooms (name) VALUES (" + newMessage.roomname + ")";
+        var msgQuery = "insert into messages (u_id, r_id, message) values (1, 1, " + newMessage.text + ")";
+        db.query(userQuery, function(err, results) {
+          console.log('Error: ',err);
+          console.log('Results: ',results);
+        });
         completeResponse(201, response, '"success"');
       });
     }
     else if (request.method === 'GET') {
-      responseBody = fs.readFileSync('./storage.txt');
+      responseBody = fs.readFileSync('../server/storage.txt');
       completeResponse(200, response, responseBody);
     }
   }
