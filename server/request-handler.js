@@ -17,7 +17,6 @@ exports.handler = function(request, response) {
   /* Documentation for both request and response can be found at
    * http://nodemanual.org/0.8.14/nodejs_ref_guide/http.html */
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
-  var responseBody;
 
   if (request.url === '/') {
     var clientHTML = fs.readFileSync('../client/index.html');
@@ -34,31 +33,17 @@ exports.handler = function(request, response) {
       });
       request.on('end', function () {
         var newMessage = JSON.parse(body);
-        console.log('Body: ',body);
-        var userQuery = "INSERT IGNORE INTO Users (name) VALUES (\'" + newMessage.username + "\')";
-        var roomQuery = "INSERT IGNORE INTO Rooms (name) VALUES (\'" + newMessage.roomname + "\')";
-        var msgQuery = "INSERT INTO Messages (u_id, r_id, message) values (1, 1, \'" + newMessage.text + "\')";
-        db.query(userQuery, function(err, results) {
-          console.log('Error: ',err);
-          console.log('Results: ',results);
-        });
-        db.query(roomQuery, function(err, results) {
-          console.log('Error: ',err);
-          console.log('Results: ',results);
-        });
-        db.query(msgQuery, function(err, results) {
-          console.log('Error: ',err);
-          console.log('Results: ',results);
-        });
+        db.userInsert(newMessage);
         completeResponse(201, response, '"success"');
       });
     }
     else if (request.method === 'GET') {
-      // responseBody = fs.readFileSync('../server/storage.txt');
-      var getMsg = "Select users.name as username, messages.message as text, rooms.name as roomname, messages.created_at as createdAt from messages inner join users on users.u_id = messages.u_id inner join rooms on rooms.r_id=messages.r_id;";
+      var getMsg = "SELECT Users.name as username, Messages.message as text, " +
+                    "Rooms.name as roomname, Messages.created_at as createdAt from Messages " +
+                    "INNER JOIN Users on Users.u_id = Messages.u_id " +
+                    "INNER JOIN Rooms on Rooms.r_id=Messages.r_id " +
+                    "ORDER BY Messages.created_at DESC";
       db.query(getMsg, function(err, results) {
-        console.log('Error: ', err);
-        console.log('Results: ',results);
         var obj = { results: results };
         completeResponse(200, response, JSON.stringify(obj));
       });
