@@ -4,7 +4,7 @@
  */
 
 var Sequelize = require("sequelize");
-var sequelize = new Sequelize("chatter", "root", "");
+var sequelize = new Sequelize("chatter", "root", "TEST123");
 /* TODO this constructor takes the database name, username, then password.
  * Modify the arguments if you need to */
 
@@ -14,9 +14,13 @@ var User = sequelize.define('User', {
   username: Sequelize.STRING
 });
 
-var Message = sequelize.define('Message' {
+var Message = sequelize.define('Message', {
   userid: Sequelize.INTEGER,
   text: Sequelize.STRING,
+  roomname: Sequelize.STRING
+});
+
+var Room = sequelize.define('Room', {
   roomname: Sequelize.STRING
 });
 
@@ -40,3 +44,10 @@ User.sync().success(function() {
     });
   });
 });
+sequelize.authenticate();
+
+Message.sync();
+Room.sync();
+exports.User = User;
+exports.Message = Message;
+exports.Room = Room;

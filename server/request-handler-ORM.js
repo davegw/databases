@@ -6,7 +6,11 @@
  * *Hint* Check out the node module documentation at http://nodejs.org/api/modules.html. */
 var fs = require('fs');
 var path = require('path');
-var db = require('../SQL/db.js').dbConnection;
+var User = require('../ORM_Refactor/orm-example').User;
+var Message = require('../ORM_Refactor/orm-example').Message;
+var Room = require('../ORM_Refactor/orm-example').Room;
+// var db = require('../ORM_Refactor/db.js').dbConnection;
+
 
 
 exports.handler = function(request, response) {
@@ -34,7 +38,19 @@ exports.handler = function(request, response) {
       });
       request.on('end', function () {
         var newMessage = JSON.parse(body);
-        db.userInsert(newMessage);
+        // db.userInsert(newMessage);
+        User.create({
+          name: newMessage.username
+        }).complete(function(err, user) {
+          console.log(user);
+        });
+        // User.find({ where: { username: newMessage.username }}).complete(function(err, result) {
+        //   var u_id = user.u_id;
+
+        // });
+        // Message.create({
+
+        // });
         completeResponse(201, response, '"success"');
       });
     }
@@ -44,10 +60,10 @@ exports.handler = function(request, response) {
                     "INNER JOIN Users on Users.u_id = Messages.u_id " +
                     "INNER JOIN Rooms on Rooms.r_id=Messages.r_id " +
                     "ORDER BY Messages.created_at DESC";
-      db.query(getMsg, function(err, results) {
-        var obj = { results: results };
-        completeResponse(200, response, JSON.stringify(obj));
-      });
+      // db.query(getMsg, function(err, results) {
+      //   var obj = { results: results };
+      //   completeResponse(200, response, JSON.stringify(obj));
+      // });
     }
   }
   else {
